@@ -17,11 +17,11 @@ inputText=tf.placeholder(tf.float32,[None,10])
 W=tf.Variable(tf.random_normal([784, 10]))
 b=tf.Variable(tf.zeros([10]))
 
-out=tf.matmul(inputImage,W)+b
+out=tf.nn.softmax(tf.matmul(inputImage,W)+b)
 
 loss = tf.reduce_mean(tf.square(inputText-out))
 
-train=tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+train=tf.train.GradientDescentOptimizer(0.2).minimize(loss)
 
 correct_prediction = tf.equal(tf.argmax(inputText,1),tf.argmax(out,1))#argmax返回一维张量中最大的值所在的位置
 #求准确率
