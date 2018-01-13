@@ -15,7 +15,7 @@ inputImage=tf.placeholder(tf.float32,[None,784])
 inputText=tf.placeholder(tf.float32,[None,10])
 
 W=tf.Variable(tf.random_normal([784, 10]))
-b=tf.Variable(tf.zeros([10]))
+b=tf.Variable(tf.random_normal([10]))
 
 out=tf.nn.softmax(tf.matmul(inputImage,W)+b)
 

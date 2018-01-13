@@ -209,7 +209,7 @@ def train_crack_captcha_cnn():
                 batch_x_test, batch_y_test = get_next_batch(100)
                 acc = sess.run(accuracy, feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
                 print u'***************************************************************第%s次的准确率为%s'%(step, acc)
-                saver.save(sess, "Model/model.ckpt")
+                # saver.save(sess, "Model/model.ckpt")
                 # 如果准确率大于50%,保存模型,完成训练
                 if acc > 0.95:                  ##我这里设了0.9，设得越大训练要花的时间越长，如果设得过于接近1，很难达到。如果使用cpu，花的时间很长，cpu占用很高电脑发烫。
                     # saver.save(sess, "Model/model.ckpt")
@@ -238,5 +238,5 @@ def show_image_text():
         # res=sess.run(max_idx_p,feed_dict={X: batch_x_test, keep_prob: 0.75})
         print vec2text(res)
 
-# train_crack_captcha_cnn()
+train_crack_captcha_cnn()
 # show_image_text()
