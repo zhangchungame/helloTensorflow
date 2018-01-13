@@ -8,7 +8,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 #载入数据集
 mnist = input_data.read_data_sets("MNIST_data",one_hot=True)
 #每个批次的大小
-batch_size = 1000
+batch_size = 50
 #计算一共有多少个批次
 n_batch = mnist.train.num_examples // batch_size
 
@@ -47,7 +47,7 @@ y_conv=tf.nn.softmax(out)
 y_=tf.placeholder(tf.float32,[None,10])
 
 
-
+#
 # cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
 # train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) #使用adam优化器来以0.0001的学习率来进行微调
 # correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
@@ -60,11 +60,13 @@ y_=tf.placeholder(tf.float32,[None,10])
 # for i in range(500): #开始训练模型，循环训练5000次
 #     batch = mnist.train.next_batch(50) #batch大小设置为50
 #     if i % 100 == 0:
-#         train_accuracy = accuracy.eval(session = sess,
-#                                        feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
+#         train_accuracy =sess.run(accuracy,feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
+#         # train_accuracy = accuracy.eval(session = sess,
+#         #                                feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
 #         print("step %d, train_accuracy %g" %(i, train_accuracy))
-#     train_step.run(session = sess, feed_dict = {x:batch[0], y_:batch[1],
-#                                                 keep_prob:0.5}) #神经元输出保持不变的概率 keep_prob 为0.5
+#     loss,_=sess.run([cross_entropy,train_step],feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
+#     print 'loss=',loss
+#
 #
 # print("test accuracy %g" %accuracy.eval(session = sess,
 #                                         feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
@@ -73,31 +75,32 @@ y_=tf.placeholder(tf.float32,[None,10])
 # end = time.clock() #计算程序结束时间
 
 
+loss = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
+train = tf.train.AdamOptimizer(1e-4).minimize(loss) #使用adam优化器来以0.0001的学习率来进行微调
+correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
+accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
+
 # loss = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
-# train = tf.train.AdamOptimizer(1e-4).minimize(loss) #使用adam优化器来以0.0001的学习率来进行微调
-# correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
-# accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
-#
-# # loss = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
-# # train = tf.train.AdamOptimizer(1e-4).minimize(loss)
-# # maxout=tf.argmax(y_conv,1)
-# # maxy=tf.argmax(y_,1)
-# # correct_pred = tf.equal(maxout, maxy)
-# # accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-#
-#
-# with tf.Session() as sess:
-#     sess.run(tf.global_variables_initializer())
-#     # batch_xs,batch_ys =  mnist.train.next_batch(batch_size)
-#     # con2_res=sess.run(con2,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
-#     # dense_res=sess.run(dense,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
-#     # dense1_res=sess.run(dense1_1,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
-#     # outres=sess.run(out,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
-#     for step in range(10):
-#         for batch in range(n_batch):
-#             batch_xs,batch_ys =  mnist.train.next_batch(batch_size)
-#             loss_res,_=sess.run([loss,train],feed_dict={x:batch_xs,y_:batch_ys,keep_prob:0.7})
-#             print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),'batch=',batch,'step=',step, 'loss=',loss_res
-#             if batch %5==0:
-#                 print sess.run(accuracy,feed_dict={x:mnist.test.images,y_:mnist.test.labels,keep_prob:1})
-#         print sess.run(accuracy,feed_dict={x:mnist.test.images,y_:mnist.test.labels,keep_prob:1})
+# train = tf.train.AdamOptimizer(1e-4).minimize(loss)
+# maxout=tf.argmax(y_conv,1)
+# maxy=tf.argmax(y_,1)
+# correct_pred = tf.equal(maxout, maxy)
+# accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+images=mnist.test.images
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    # batch_xs,batch_ys =  mnist.train.next_batch(batch_size)
+    # con2_res=sess.run(con2,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
+    # dense_res=sess.run(dense,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
+    # dense1_res=sess.run(dense1_1,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
+    # outres=sess.run(out,feed_dict={x:batch_xs,y:batch_ys,keep_prob:0.7})
+    for step in range(10):
+        for batch in range(n_batch):
+            batch_xs,batch_ys =  mnist.train.next_batch(batch_size)
+            loss_res,_=sess.run([loss,train],feed_dict={x:batch_xs,y_:batch_ys,keep_prob:0.7})
+            if batch %10==0:
+                print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),'batch=',batch,'step=',step, 'loss=',loss_res
+                print sess.run(accuracy,feed_dict={x:batch_xs,y_:batch_ys,keep_prob:1})
+        testx,testy=mnist.test.next_batch(5000)
+        print 'finally',sess.run(accuracy,feed_dict={x:testx,y_:testy,keep_prob:1})
