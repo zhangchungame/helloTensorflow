@@ -47,35 +47,8 @@ y_conv=tf.nn.softmax(out)
 y_=tf.placeholder(tf.float32,[None,10])
 
 
-#
-# cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
-# train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) #使用adam优化器来以0.0001的学习率来进行微调
-# correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
-# accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
-#
-# sess = tf.Session() #启动创建的模型
-# sess.run(tf.initialize_all_variables()) #旧版本
-# #sess.run(tf.global_variables_initializer()) #初始化变量
-#
-# for i in range(500): #开始训练模型，循环训练5000次
-#     batch = mnist.train.next_batch(50) #batch大小设置为50
-#     if i % 100 == 0:
-#         train_accuracy =sess.run(accuracy,feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
-#         # train_accuracy = accuracy.eval(session = sess,
-#         #                                feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
-#         print("step %d, train_accuracy %g" %(i, train_accuracy))
-#     loss,_=sess.run([cross_entropy,train_step],feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
-#     print 'loss=',loss
-#
-#
-# print("test accuracy %g" %accuracy.eval(session = sess,
-#                                         feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
-#                                                      keep_prob:1.0})) #神经元输出保持不变的概率 keep_prob 为 1，即不变，一直保持输出
-#
-# end = time.clock() #计算程序结束时间
-
-
-loss = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
+# loss = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
+loss=tf.reduce_mean(tf.square(y_-y_conv))
 train = tf.train.AdamOptimizer(1e-4).minimize(loss) #使用adam优化器来以0.0001的学习率来进行微调
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
 accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
